@@ -1,0 +1,438 @@
+{
+  "name": "MCP Server",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "82d48ee6-9083-4625-a3e2-25dd01a7d21a"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -16
+      ],
+      "id": "ffcd898d-fbca-46f0-b51b-811a50bbe081",
+      "name": "MCP Server Trigger",
+      "webhookId": "82d48ee6-9083-4625-a3e2-25dd01a7d21a"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        304
+      ],
+      "id": "372d3092-beb2-4385-86dd-87d1ff6df6bb",
+      "name": "Create Draft",
+      "webhookId": "0259b560-c3bf-449f-85dd-b769ca2083b6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TtoWzSBaaYbaM4yn",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -96,
+        304
+      ],
+      "id": "d01fffc6-21e4-43c2-8cd6-af6b76ffc531",
+      "name": "Read Emails",
+      "webhookId": "ccbfe0f1-e95b-430b-973d-f52d5f88273c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TtoWzSBaaYbaM4yn",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app2G0vN5qgLLcQHY",
+          "mode": "list",
+          "cachedResultName": "KreaFlow",
+          "cachedResultUrl": "https://airtable.com/app2G0vN5qgLLcQHY"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblsmaQDwqQE7DjTe",
+          "mode": "list",
+          "cachedResultName": "Candidatos",
+          "cachedResultUrl": "https://airtable.com/app2G0vN5qgLLcQHY/tblsmaQDwqQE7DjTe"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        192,
+        304
+      ],
+      "id": "f215241e-3e65-4eb1-a259-a628aa4cc00f",
+      "name": "List Users",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "WniYlue0h90n6BTl",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app2G0vN5qgLLcQHY",
+          "mode": "list",
+          "cachedResultName": "KreaFlow",
+          "cachedResultUrl": "https://airtable.com/app2G0vN5qgLLcQHY"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblsmaQDwqQE7DjTe",
+          "mode": "list",
+          "cachedResultName": "Candidatos",
+          "cachedResultUrl": "https://airtable.com/app2G0vN5qgLLcQHY/tblsmaQDwqQE7DjTe"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+            "Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Email', ``, 'string') }}",
+            "Profesion": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Profesion', ``, 'string') }}",
+            "id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('id__using_to_match_', `Airtable Record ID, usually on this format: \"recSde9348SDb\"`, 'string') }}",
+            "Estado": "={{ $fromAI(\"Estado\", \"Este es el estado en el proceso de entrevista del usuario\") }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Profesion",
+              "displayName": "Profesion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Descartar",
+                  "value": "Descartar"
+                },
+                {
+                  "name": "Entrevista Psicologica",
+                  "value": "Entrevista Psicologica"
+                },
+                {
+                  "name": "Entrevista Tecnica",
+                  "value": "Entrevista Tecnica"
+                },
+                {
+                  "name": "Carta Oferta",
+                  "value": "Carta Oferta"
+                },
+                {
+                  "name": "Contratado",
+                  "value": "Contratado"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        432,
+        304
+      ],
+      "id": "57a926f8-9e42-499f-9ec0-0af78c3e58be",
+      "name": "Update User",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "WniYlue0h90n6BTl",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app2G0vN5qgLLcQHY",
+          "mode": "list",
+          "cachedResultName": "KreaFlow",
+          "cachedResultUrl": "https://airtable.com/app2G0vN5qgLLcQHY"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblsmaQDwqQE7DjTe",
+          "mode": "list",
+          "cachedResultName": "Candidatos",
+          "cachedResultUrl": "https://airtable.com/app2G0vN5qgLLcQHY/tblsmaQDwqQE7DjTe"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+            "Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Email', ``, 'string') }}",
+            "Profesion": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Profesion', ``, 'string') }}",
+            "Estado": "Entrevista Psicologica"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Profesion",
+              "displayName": "Profesion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Descartar",
+                  "value": "Descartar"
+                },
+                {
+                  "name": "Entrevista Psicologica",
+                  "value": "Entrevista Psicologica"
+                },
+                {
+                  "name": "Entrevista Tecnica",
+                  "value": "Entrevista Tecnica"
+                },
+                {
+                  "name": "Carta Oferta",
+                  "value": "Carta Oferta"
+                },
+                {
+                  "name": "Contratado",
+                  "value": "Contratado"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        304,
+        304
+      ],
+      "id": "0c51a4bb-0b87-400f-997a-02ace4f0761e",
+      "name": "Create User",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "WniYlue0h90n6BTl",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Emails",
+        "height": 240,
+        "width": 300
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        224
+      ],
+      "id": "3905d549-5a55-4882-a06a-5dfa9d402df6",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Users",
+        "height": 240,
+        "width": 400,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        144,
+        224
+      ],
+      "id": "7b9e2c5f-d2b1-4d21-98f8-43f6d228318b",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Create Draft": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Emails": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Users": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update User": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create User": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1d4dc41b-d5a9-4cbf-a6fd-e37cf5db45a4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "459048a985e48975a7cdd849ffc070141476660681b71299cde19c05546285d9"
+  },
+  "id": "peKSu7GIv5Hsz1iN",
+  "tags": []
+}
