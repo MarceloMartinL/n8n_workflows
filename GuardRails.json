@@ -1,0 +1,268 @@
+{
+  "name": "GuardRails",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -64,
+        -144
+      ],
+      "id": "8ed74606-d06c-482c-807d-60125cb8f40c",
+      "name": "When chat message received",
+      "webhookId": "164c4554-ac90-4b62-a411-eb4faebdeaf8"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "239fa226-1f2a-447d-a8f9-37be8fd4040c",
+              "name": "response",
+              "value": "Lo siento, tu mensaje tiene contenido prohibido",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        32
+      ],
+      "id": "b40c6749-d490-440a-809a-a6e36dc2ce22",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        48
+      ],
+      "id": "beb35984-b786-44d7-8338-c5af53e4ed7d",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "zRsS8HggDnh8bWqc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.chatInput }}",
+        "guardrails": {
+          "keywords": "sexo, drogas",
+          "jailbreak": {
+            "value": {
+              "threshold": 0.7
+            }
+          },
+          "pii": {
+            "value": {
+              "type": "selected",
+              "entities": [
+                "EMAIL_ADDRESS"
+              ]
+            }
+          },
+          "topicalAlignment": {
+            "value": {
+              "threshold": 0.7,
+              "prompt": "You are a content analysis system that determines if text stays on topic.\n\nBUSINESS SCOPE: marketing agency\n\nDetermine if the text stays within the defined business scope. Flag any content\nthat strays from the allowed topics."
+            }
+          },
+          "urls": {
+            "value": {
+              "allowedUrls": "https://kreaflow.framer.website/"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.guardrails",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -144
+      ],
+      "id": "8e248371-1b3a-48ed-a09b-b89b416318fe",
+      "name": "Guardrails"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Utiliza esta herramienta para obtener información sobre la agencia LuminaGrowth",
+        "operation": "get",
+        "documentURL": "1TKF-htnf_JGnVjD6BCQUHnO1xqRDcl47GtNmpkJaJtQ"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        896,
+        -160
+      ],
+      "id": "cad97878-35c3-49a5-bb43-b364973966d0",
+      "name": "LuminaKB",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "MHbXP9jaxqbKoJn3",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        752,
+        -160
+      ],
+      "id": "2b404851-b420-4b32-b0ef-185c300d1f0e",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "guardrails",
+        "options": {
+          "systemMessage": "# Contexto\nEres un asistente para la agencia de marketing LuminaGrowth.\n\n# Objectivo\nTu tarea es responder las preguntas de los usuarios sobre la agencia y los servicios que ofrecemos.\n\n# Herramientas\n1. LuminaKB: Utiliza esta herramienta para obtener información sobre la agencia de marketing"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        656,
+        -368
+      ],
+      "id": "9ee9b9e5-8fd6-456c-9f45-c260f161f792",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        -160
+      ],
+      "id": "57156a8e-2177-4faf-a5ef-327804472bd6",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "zRsS8HggDnh8bWqc",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Guardrails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Guardrails",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardrails": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LuminaKB": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ac8a19c7-1dc5-4c68-bdaf-71caf2d8b180",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "459048a985e48975a7cdd849ffc070141476660681b71299cde19c05546285d9"
+  },
+  "id": "fgqEK3hojJsO1qAB",
+  "tags": []
+}
