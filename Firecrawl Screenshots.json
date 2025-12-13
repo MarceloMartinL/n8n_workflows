@@ -1,0 +1,332 @@
+{
+  "name": "Firecrawl Screenshots",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        64,
+        -16
+      ],
+      "id": "ef2a586b-4aa7-41d6-a331-310a3edfd7b4",
+      "name": "When chat message received",
+      "webhookId": "fa5a84da-064e-426d-b896-c1f99975c6d3"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "# Overview\nYou are a Search Query Generator Agent to search in the internet using Firecrawl.\n\nTo search in the internet you can use the tool called 'FireCrawl Search'.\n\n# Your job\n1. Convert the user instructions into properly formatted Firecrawl query string using specific operators.\n2. Send the 'query' and the 'limit' parameter to the 'FireCrawl Search' tool.\n3. For each article found return the description, url, and screenshot url.\n\n# Rules for the Query String\n\nUse these rules to transform the user input into a valid Firecrawl query string:\n\n- To include an exact word or phrase\n  ex: 'Elon Musk'\n\n- If the user wants to search within a specific website, use 'site:'\n  ex: 'site:reddit.com'\n\n- If the user wants to exclude a term or website, prefix them with '-'\n  ex: '-linkedin', '-site:youtube.com'\n\n- If the user wants to include a word in the URL, use 'inurl:'\n  ex: 'inurl:elonmusk'\n\n- If the user wants to include multiple words in the URL, use 'allinurl:'\n  ex: 'allinurl:elon musk twitter'\n\n- If the user wants a word in the title, use 'intitle:'\n  ex: 'intitle:openai'\n\n- If the user wants multiple words in the title, use 'allintitle:'\n  ex: 'allintitle: n8n agent tutorial'\n\n- If the user wants results related to an specific domain, use 'related:'\n  ex: 'related:cnn.com'\n\n## Tool Usage Instructions:\n\nAlways call the 'FireCrawl Search' tool with the following parameters:\n- 'query': This is the final query string constructed\n- 'limit': This is the number of results the user requested\n\nIf the user does NOT specify a limit, use this default:\n- 'limit: 3'\n\n## Examples:\n\n- Input: Search the internet for Elon Musk\n- Action: Use the tool called 'FireCrawl Search' with the following JSON:\n{\n  \"query\": \"Elon Musk\",\n  \"limit\": 3\n}\n\n- Input: Search pages with Mr Beast in the title from youtube, give me 5 results\n- Action: Use the tool called 'FireCrawl Search' with the following JSON:\n{\n  \"query\": \"allintitle:Mr Beast site:youtube.com\",\n  \"limit\": 5\n}\n\n- Input: Search about Elon Musk but exclude x.com\n- Action: Use the tool called 'FireCrawl Search' with the following JSON:\n{\n  \"query\": \"Elon Musk -site:x.com\",\n  \"limit\": 3\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        288,
+        -16
+      ],
+      "id": "0890ad51-0a73-4d41-bb95-9e3b271b3986",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        224
+      ],
+      "id": "488304ad-1261-4cb4-85b1-2fc36aab717c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "zRsS8HggDnh8bWqc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to search information in the web",
+        "method": "POST",
+        "url": "https://api.firecrawl.dev/v1/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"{{$fromAI(\"query\")}}\",\n  \"limit\": {{$fromAI(\"limit\", \"the number of results requested\", number)}},\n  \"scrapeOptions\": {\n    \"formats\": [\"markdown\", \"screenshot@fullPage\"]\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        512,
+        208
+      ],
+      "id": "03e5c561-81ec-4826-9fec-ebad6cf23822",
+      "name": "FireCrawl Search",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "2kw2JB8vVdioRVk8",
+          "name": "Firecrawl Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.firecrawl.dev/v1/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"query\": \"Elon Musk site:cnn.com\",\n  \"limit\": 5\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -144,
+        544
+      ],
+      "id": "c4bf199a-e6ba-456c-8f6b-bd3cdadb5050",
+      "name": "Specific Site",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "2kw2JB8vVdioRVk8",
+          "name": "Firecrawl Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.firecrawl.dev/v1/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"query\": \"Elon Musk -inurl:wikipedia\",\n  \"limit\": 5\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        544
+      ],
+      "id": "13905076-85bf-4821-868a-e5ca9f750587",
+      "name": "Exclude Term",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "2kw2JB8vVdioRVk8",
+          "name": "Firecrawl Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.firecrawl.dev/v1/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"query\": \"Elon Musk inurl:reddit.com\",\n  \"limit\": 3\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        544
+      ],
+      "id": "0e38c8ba-40bc-4187-b18f-290f5f6b5264",
+      "name": "Word in URL",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "2kw2JB8vVdioRVk8",
+          "name": "Firecrawl Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.firecrawl.dev/v1/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"query\": \"Elon Musk site:cnn.com -twitter intitle:buy\",\n  \"limit\": 3\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        944,
+        544
+      ],
+      "id": "ba48fcc7-43fe-4880-bebb-dd6a46f97d0f",
+      "name": "Multiple Options",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "2kw2JB8vVdioRVk8",
+          "name": "Firecrawl Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Search Specific Website",
+        "height": 260,
+        "width": 300,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        464
+      ],
+      "id": "e4e85488-48d7-4596-9f1e-a7bae64d92dd",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Exclude Specific Term",
+        "height": 260,
+        "width": 300,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        128,
+        464
+      ],
+      "id": "f905f6fd-bfdc-457e-9549-a1480a29deca",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Include Words in URL",
+        "height": 260,
+        "width": 300,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        480,
+        464
+      ],
+      "id": "6308f14b-574b-4c7f-83d1-c95dfb9f2b31",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Multiple Options",
+        "height": 260,
+        "width": 300,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        848,
+        464
+      ],
+      "id": "421e4feb-c5e3-4d04-995d-562a77847326",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.firecrawl.dev/v1/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"query\": \"Bitcoin site:cnn.com intitle:market\",\n  \"limit\": 2,\n  \"tbs\": \"Jan 2025\",\n  \"location\": \"us\",\n  \"timeout\": 60000,\n  \"ignoreInvalidURLs\": false,\n  \"scrapeOptions\": {\n    \"formats\": [\"markdown\", \"screenshot@fullPage\"]\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        864
+      ],
+      "id": "76fa6aaf-bbaf-42ee-95ea-f67ad1d75480",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "2kw2JB8vVdioRVk8",
+          "name": "Firecrawl Auth"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FireCrawl Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Multiple Options": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b93092fb-f0c8-44c8-acff-f611e078da37",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "459048a985e48975a7cdd849ffc070141476660681b71299cde19c05546285d9"
+  },
+  "id": "4IkTIRFY0RaXBX6o",
+  "tags": []
+}
