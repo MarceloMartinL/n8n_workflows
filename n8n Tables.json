@@ -1,0 +1,1016 @@
+{
+  "name": "n8n Tables",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        736
+      ],
+      "id": "2446d3a0-1cfd-4f10-839d-6d3d69fd3aee",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1iiAdVwUaMGsRjMnqtIdlgkK-6bosmkg_IPcUOUMeB2c",
+          "mode": "list",
+          "cachedResultName": "applicants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iiAdVwUaMGsRjMnqtIdlgkK-6bosmkg_IPcUOUMeB2c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iiAdVwUaMGsRjMnqtIdlgkK-6bosmkg_IPcUOUMeB2c/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        160,
+        240
+      ],
+      "id": "77388014-cd46-4d8f-831a-e31187c07912",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gadksHwMc0QDZnVP",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "u17bwUDyDfxQ9FGP",
+          "mode": "list",
+          "cachedResultName": "applicants",
+          "cachedResultUrl": "/projects/eF8uEoJY7B19bIRa/datatables/u17bwUDyDfxQ9FGP"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "expected_salary": "={{ $json['Expected Salary'] }}",
+            "name": "={{ $json.Name }}",
+            "email": "={{ $json.Email }}",
+            "job_title": "={{ $json['Job Title'] }}",
+            "birthdate": "={{ $json.Birthdate.toDateTime() }}",
+            "status": "={{ $json.Status }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "job_title",
+              "displayName": "job_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "expected_salary",
+              "displayName": "expected_salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "birthdate",
+              "displayName": "birthdate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        336,
+        240
+      ],
+      "id": "87be62cf-df95-4e38-aa40-e8f7e82d9c18",
+      "name": "Insert Aplicants"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        1168,
+        64
+      ],
+      "id": "2b1bac61-1551-4892-8452-0c9eee633e58",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TRDdjC4AZaOFDeqM",
+          "name": "MiniPrinter Gmail"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "u17bwUDyDfxQ9FGP",
+          "mode": "list",
+          "cachedResultName": "applicants",
+          "cachedResultUrl": "/projects/eF8uEoJY7B19bIRa/datatables/u17bwUDyDfxQ9FGP"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email",
+              "keyValue": "={{ $json.from.value[0].address }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        64
+      ],
+      "id": "faf8d87d-a359-4031-99b7-39333de8c2cc",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Titulo del Email:  {{ $('Gmail Trigger').item.json.subject }}\nTexto del Email: {{ $('Gmail Trigger').item.json.text }}\nNombre del postulante: {{ $json.name }}\nProfesión: {{ $json.job_title }}\nExpectativa salarial: {{ $json.expected_salary }} USD\nEstado del proceso de postulación: {{ $json.status }}",
+        "options": {
+          "systemMessage": "=# Contexto\nEres un asistente para una agencia de reclutamiento de perfiles técnicos, y tu trabajo es responder a los emails de los postulantes de forma amable y profesional.\n\n## Fases de postulación\n1. Entrevista Psicológica: Esta es la primera entrevista, enfocada en identificar aspectos personales y conductuales de los postulantes, tales como: trabajo en equipo, manejo del estrés, motivación, etc.\n2. Entrevista Técnica: Esta es la segunda entrevista y esta enfocada en evaluar los conocimientos y habilidades prácticas de programación del candidato.\n3. Carta Oferta: Esta etapa significa que el postulante ya aprobo la entrevista psicologica y la tecnica, por lo que recibira una carta oferta dentro de los proximos dias.\n4. Descartar: Esta etapa significa que el candidato ha sido descartado, por lo que no seguira avanzando en el proceso de seleccion.\n\n# Objetivo\nDebes responder el email del postulante tomando en cuenta la etapa en que se encuentra en el proceso de seleccion.\n\n# Reglas\n- Responde en tono amable y profesional.\n- Responde de de forma clara y concisa."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1488,
+        64
+      ],
+      "id": "bc60eef9-d86c-422c-8bee-e3f73fab0f8a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1456,
+        288
+      ],
+      "id": "b01359a1-9bda-414f-801d-27cca6aeac61",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "zRsS8HggDnh8bWqc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Gmail Trigger').item.json.from.value[0].address }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1600,
+        288
+      ],
+      "id": "abe5c1ad-e0b6-4504-b673-961ff24d7552",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1792,
+        64
+      ],
+      "id": "888a6a58-a5f5-4940-a5a8-d1e1a996e379",
+      "name": "Reply to a message",
+      "webhookId": "60ea3c61-ed0a-4b49-88be-438c97fba3ea",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TRDdjC4AZaOFDeqM",
+          "name": "MiniPrinter Gmail"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        608
+      ],
+      "id": "0862a3ad-2753-499c-a1ed-6215c91d4ef0",
+      "name": "When chat message received",
+      "webhookId": "f371e649-3ade-4715-84a4-cb454d9783a9"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=# Contexto\nEres un asistente para un reclutador que entrevista perfiles técnicos de programación y eres experto consultando bases de datos para resolver las preguntas sobre los candidatos.\n\n# Objetivo\nTu objetivo es responder las preguntas del reclutador respecto de los candidatos, utilizando las herramientas adecuadas para consultar la base de datos.\n\n# Herramientas\n- all_applicants_query: Utiliza esta herramienta para consultar la información de todos los postulantes.\n- job_title_query: Utiliza esta herramienta para buscar a los postulantes de un cargo en especifico. Para utilizar esta herramienta debes utilizar un job_title, los valores validos son: \"Fullstack Ruby on Rails Developer\", \"Backend Python Developer\", \"Data Engineer\" y \"Frontend React Developer\".\n- salary_query: Utiliza esta herramienta para filtrar a los candidatos dentro de un rango salarial esperado. Para utilizar esta herramienta debes utilizar valores enteros, los montos estan en USD.\n- Calculator: Utiliza esta herramienta para realizar cualquier operación matematica necesaria (sumas, restas, calcular promedios, etc).\n\n# Reglas\n- Siempre utiliza la herramienta \"Calculator\" para realizar las operaciones matematicas cuando sea necesario.\n- Siempre explica los calculos realizados para llegar al resultado.\n\n# Tono\n- Responde de forma profesional.\n\n\n\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        240,
+        608
+      ],
+      "id": "d1e85e9a-121a-41bd-b97c-7bb1eba153d3",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        832
+      ],
+      "id": "9d682fad-a6ef-4aca-85c7-e7fad64548ac",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "zRsS8HggDnh8bWqc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        832
+      ],
+      "id": "e46b6e8b-4665-42c0-9269-6d62cd0370ee",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "u17bwUDyDfxQ9FGP",
+          "mode": "list",
+          "cachedResultName": "applicants",
+          "cachedResultUrl": "/projects/eF8uEoJY7B19bIRa/datatables/u17bwUDyDfxQ9FGP"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "job_title",
+              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions0_Value', ``, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1,
+      "position": [
+        544,
+        832
+      ],
+      "id": "0be632b0-e1d5-4249-92c1-bc23080d63e3",
+      "name": "job_title_query"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "u17bwUDyDfxQ9FGP",
+          "mode": "list",
+          "cachedResultName": "applicants",
+          "cachedResultUrl": "/projects/eF8uEoJY7B19bIRa/datatables/u17bwUDyDfxQ9FGP"
+        }
+      },
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1,
+      "position": [
+        400,
+        832
+      ],
+      "id": "0e2d0eba-bec0-44dc-b025-bdb3766085b3",
+      "name": "all_applicants_query"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "u17bwUDyDfxQ9FGP",
+          "mode": "list",
+          "cachedResultName": "applicants",
+          "cachedResultUrl": "/projects/eF8uEoJY7B19bIRa/datatables/u17bwUDyDfxQ9FGP"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "expected_salary",
+              "condition": "gte",
+              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions0_Value', ``, 'string') }}"
+            },
+            {
+              "keyName": "expected_salary",
+              "condition": "lte",
+              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions1_Value', ``, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1,
+      "position": [
+        672,
+        832
+      ],
+      "id": "09edf6a0-47c4-4e34-84c8-75fa4a9ffb0d",
+      "name": "salary_query"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        800,
+        832
+      ],
+      "id": "8ddf954c-1cc8-4949-811b-26ecdf5e32e0",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1iiAdVwUaMGsRjMnqtIdlgkK-6bosmkg_IPcUOUMeB2c",
+          "mode": "list",
+          "cachedResultName": "applicants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iiAdVwUaMGsRjMnqtIdlgkK-6bosmkg_IPcUOUMeB2c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iiAdVwUaMGsRjMnqtIdlgkK-6bosmkg_IPcUOUMeB2c/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1360,
+        736
+      ],
+      "id": "ce8017be-17e2-4c2e-a980-376c3ac8dd92",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gadksHwMc0QDZnVP",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "u17bwUDyDfxQ9FGP",
+          "mode": "list",
+          "cachedResultName": "applicants",
+          "cachedResultUrl": "/projects/eF8uEoJY7B19bIRa/datatables/u17bwUDyDfxQ9FGP"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "expected_salary": "={{ $json['Expected Salary'] }}",
+            "name": "={{ $json.Name }}",
+            "email": "={{ $json.Email }}",
+            "job_title": "={{ $json['Job Title'] }}",
+            "birthdate": "={{ $json.Birthdate.toDateTime() }}",
+            "status": "={{ $json.Status }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "job_title",
+              "displayName": "job_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "expected_salary",
+              "displayName": "expected_salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "birthdate",
+              "displayName": "birthdate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        848
+      ],
+      "id": "8f736c61-720d-4ba5-8e1a-1f757b6adb0d",
+      "name": "Insert Aplicants1"
+    },
+    {
+      "parameters": {
+        "tableId": "applicants",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.Name }}"
+            },
+            {
+              "fieldId": "email",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.Email }}"
+            },
+            {
+              "fieldId": "job_title",
+              "fieldValue": "={{ $('Code in JavaScript').item.json['Job Title'] }}"
+            },
+            {
+              "fieldId": "expected_salary",
+              "fieldValue": "={{ $('Code in JavaScript').item.json['Expected Salary'] }}"
+            },
+            {
+              "fieldId": "birthdate",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.Birthdate }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.Status }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        592
+      ],
+      "id": "1f2666fa-45f6-409a-9d16-cb9a46d3b9f1",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "0XwJWmkgsjMJALxb",
+          "name": "Gato Gloton Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst items = $input.all();\nconst times = 60;              // <-- change how many times you want to multiply\nconst out = [];\n\nfor (let i = 0; i < times; i++) {\n  for (let idx = 0; idx < items.length; idx++) {\n    const cloned = JSON.parse(JSON.stringify(items[idx]));\n    cloned.json._copy_index = i;\n    cloned.json._row_index = idx;\n    // Add a stable-ish unique id to avoid dedup downstream\n    cloned.json._uid = `${idx}-${i}-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;\n    out.push(cloned);\n  }\n}\n\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1536,
+        736
+      ],
+      "id": "edd3ff37-7941-4722-9aac-c99f92589d8d",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "content": "## Operaciones Simples",
+        "height": 352,
+        "width": 672,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -96,
+        112
+      ],
+      "typeVersion": 1,
+      "id": "53a6aba1-8140-4487-b524-26b9ee0a3e3a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Asistente Email",
+        "height": 512,
+        "width": 944,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1104,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "1151898a-08fc-42c8-97d2-fda15432fc42",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Agente IA Reclutador",
+        "height": 496,
+        "width": 1136,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -96,
+        528
+      ],
+      "typeVersion": 1,
+      "id": "77f730ec-6d6f-4b1c-ac84-b70e71e031cb",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Speed Test",
+        "height": 480,
+        "width": 944,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1104,
+        544
+      ],
+      "typeVersion": 1,
+      "id": "4f72aeae-c8e9-43f2-a3a1-af248649293c",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "u17bwUDyDfxQ9FGP",
+          "mode": "list",
+          "cachedResultName": "applicants",
+          "cachedResultUrl": "/projects/eF8uEoJY7B19bIRa/datatables/u17bwUDyDfxQ9FGP"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "condition": "isNotEmpty"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        352,
+        -96
+      ],
+      "id": "5a59fa85-3619-4939-a73d-eee47ec50736",
+      "name": "Delete row(s)"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=# Contexto\nEres un asistente para un reclutador que entrevista perfiles técnicos de programación y eres experto consultando bases de datos para resolver las preguntas sobre los candidatos.\n\n# Objetivo\nTu objetivo es responder las preguntas del reclutador respecto de los candidatos, utilizando las herramientas adecuadas para consultar la base de datos.\n\n# Herramientas\n- all_applicants_query: Utiliza esta herramienta para consultar la información de todos los postulantes.\n- job_title_query: Utiliza esta herramienta para buscar a los postulantes de un cargo en especifico. Para utilizar esta herramienta debes utilizar un job_title, los valores validos son: \"Fullstack Ruby on Rails Developer\", \"Backend Python Developer\", \"Data Engineer\" y \"Frontend React Developer\".\n- salary_query: Utiliza esta herramienta para filtrar a los candidatos dentro de un rango salarial esperado. Para utilizar esta herramienta debes utilizar valores enteros, los montos estan en USD.\n- Calculator: Utiliza esta herramienta para realizar cualquier operación matematica necesaria (sumas, restas, calcular promedios, etc).\n\n# Reglas\n- Siempre utiliza la herramienta \"Calculator\" para realizar las operaciones matematicas cuando sea necesario.\n- Siempre explica los calculos realizados para llegar al resultado.\n\n# Tono\n- Responde de forma profesional.\n\n\n\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        1760
+      ],
+      "id": "e163d995-cf61-446e-abe9-a4d60447083a",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        608,
+        1984
+      ],
+      "id": "c4c3926b-fb4f-4e75-af48-6e663722c96a",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "zRsS8HggDnh8bWqc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        768,
+        1984
+      ],
+      "id": "018a58ad-142d-438b-af9e-d1b71458feb3",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "u17bwUDyDfxQ9FGP",
+          "mode": "list",
+          "cachedResultName": "applicants",
+          "cachedResultUrl": "/projects/eF8uEoJY7B19bIRa/datatables/u17bwUDyDfxQ9FGP"
+        }
+      },
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        2000
+      ],
+      "id": "dc595861-cd51-4421-81c7-6adf8961be18",
+      "name": "all"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Insert Aplicants",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "job_title_query": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "all_applicants_query": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "salary_query": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Insert Aplicants1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row": {
+      "main": [
+        []
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "all": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "48a4ab37-a3f6-4c8b-a11a-4e1dbd37d8f1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "459048a985e48975a7cdd849ffc070141476660681b71299cde19c05546285d9"
+  },
+  "id": "K7NsirTjpQHBuClj",
+  "tags": []
+}
