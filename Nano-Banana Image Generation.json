@@ -1,0 +1,505 @@
+{
+  "name": "Nano-Banana Image Generation",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/nano-banana/edit",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"prompt\": \"{{ $('When Executed by Another Workflow').item.json.prompt }}\",\n  \"image_urls\": [\n    \"{{ $json.image_urls[0] }}\",\n    \"{{ $json.image_urls[1] }}\"\n  ],\n  \"num_images\": 1,\n  \"output_format\": \"jpeg\"\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -816,
+        16
+      ],
+      "id": "6c1271e5-da04-41bb-8d72-a93771ee0b5d",
+      "name": "Create nano-banana image",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "fTIlWvNm4rLldg1n",
+          "name": "Bearer Auth account"
+        },
+        "httpHeaderAuth": {
+          "id": "7JekOydTCDqvzE4G",
+          "name": "Fal.ai Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const image1 = $input.first().json.image1_id\nconst image2 = $input.first().json.image2_id;\nconst img_arr = [image1, image2];\n\nreturn img_arr.map(img => ({ json: { img } }))"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1616,
+        16
+      ],
+      "id": "7b53488d-830f-499d-8383-2c636ed3756d",
+      "name": "Create Image Array"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.img }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1456,
+        16
+      ],
+      "id": "12d0a653-d859-4333-beb2-c9e3cc7100ae",
+      "name": "Download file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "89koRBqfquS4zLOH",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "image_urls"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -976,
+        16
+      ],
+      "id": "1ae1cce8-70f6-457e-900a-6099c198311c",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://jjtjnjrfixershkhaogo.supabase.co/storage/v1/object/images/{{ $now + $json.img }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1296,
+        16
+      ],
+      "id": "24f5df5d-b641-4362-841b-79e13cbef355",
+      "name": "Upload Images",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "L96HpkN1ltONONgS",
+          "name": "Supabase Bucket"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "960451c1-a784-4a22-b744-5da0c998e4b7",
+              "name": "image_urls",
+              "value": "=https://jjtjnjrfixershkhaogo.supabase.co/storage/v1/object/public/{{ $json.Key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1136,
+        16
+      ],
+      "id": "68abfa7e-5825-424c-9cae-bff407dc129b",
+      "name": "Build public urls"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -656,
+        16
+      ],
+      "id": "8beeea2d-0d1a-48d1-92f9-043078e27656",
+      "name": "Wait",
+      "webhookId": "901f855e-e7d1-42e9-86a3-ea5d4b07655f"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.status_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -480,
+        16
+      ],
+      "id": "123225aa-3030-423a-ab97-ed70acb7dc4a",
+      "name": "Get Status",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "7JekOydTCDqvzE4G",
+          "name": "Fal.ai Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.images[0].url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        48,
+        0
+      ],
+      "id": "10f60672-affa-4633-be78-2f01604284af",
+      "name": "Download Result Image"
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/nano-banana/requests/{{ $json.request_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -112,
+        0
+      ],
+      "id": "8a378214-5ab2-45f7-91d3-54196b3ed337",
+      "name": "Get Result URL",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "7JekOydTCDqvzE4G",
+          "name": "Fal.ai Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1b4d7f31-a314-4682-a73f-6e5a98200559",
+              "name": "response",
+              "value": "=La imagen ha sido creada y guardada en google drive con este nombre: {{ $json.name }}\n\nAdemas, este es el link directo de la imagen: {{ $json.webViewLink }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        0
+      ],
+      "id": "d44563ce-da47-42ad-aa7c-e1fd80f8dbc6",
+      "name": "Set Response"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "prompt"
+            },
+            {
+              "name": "image1_id"
+            },
+            {
+              "name": "image2_id"
+            },
+            {
+              "name": "image_title"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1792,
+        16
+      ],
+      "id": "3abf4445-8984-4ef6-ba4a-5b0af4eb1355",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "name": "={{ $('When Executed by Another Workflow').item.json.image_title }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "11JUQLqhi8BkhSVs1QL-bhW9HHe6wDqFm",
+          "mode": "list",
+          "cachedResultName": "Video 20",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/11JUQLqhi8BkhSVs1QL-bhW9HHe6wDqFm"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        224,
+        0
+      ],
+      "id": "e7ca3ab0-ca0a-459d-a356-ebb037f33309",
+      "name": "Upload Generated Image",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "89koRBqfquS4zLOH",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "80a192f6-0af8-4ff0-83ec-bcec6643fff8",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "COMPLETED",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -304,
+        16
+      ],
+      "id": "92630a2c-f7a8-4861-8c53-5a7f37676594",
+      "name": "Job Finished?"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "prompt": "Super Mario y Yoshi juntos en el castillo de Peach, ambiente alegre y colorido, fondo de castillo reconocible, estilo caricaturesco y vibrante, detallado.",
+          "image1_id": "1pBAbLc9bk8J_4TPg2lAj1ujbZMlrsGOv",
+          "image2_id": "1bnlQwlnvLWmwAIL9cN8xNINEg3cZjNXK",
+          "image_title": "super_mario_y_yoshi_en_castillo_peach"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Create nano-banana image": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Image Array": {
+      "main": [
+        [
+          {
+            "node": "Download file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file1": {
+      "main": [
+        [
+          {
+            "node": "Upload Images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Create nano-banana image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Images": {
+      "main": [
+        [
+          {
+            "node": "Build public urls",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build public urls": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Status": {
+      "main": [
+        [
+          {
+            "node": "Job Finished?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Result Image": {
+      "main": [
+        [
+          {
+            "node": "Upload Generated Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Result URL": {
+      "main": [
+        [
+          {
+            "node": "Download Result Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Create Image Array",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Generated Image": {
+      "main": [
+        [
+          {
+            "node": "Set Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Finished?": {
+      "main": [
+        [
+          {
+            "node": "Get Result URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "01f9cc2e-9628-4d14-9ad8-df97c4369513",
+  "meta": {
+    "instanceId": "459048a985e48975a7cdd849ffc070141476660681b71299cde19c05546285d9"
+  },
+  "id": "pI4G3pJlg3QCY5L1",
+  "tags": []
+}
