@@ -1,0 +1,430 @@
+{
+  "name": "Heygen Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        400
+      ],
+      "id": "c75a61f3-e1aa-44cd-ac90-5b86f2ef4a05",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.heygen.com/v2/video/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"video_inputs\": [\n    {\n      \"character\": {\n        \"type\": \"avatar\",\n        \"avatar_id\": \"4d91dd901f90465cb2ffc65dd162277a\",\n        \"avatar_style\": \"normal\"\n      },\n      \"voice\": {\n        \"type\": \"text\",\n        \"voice_id\": \"6b92cc75c37249babee98ce2c7945c97\",\n        \"input_text\": \"Hola a todos, bienvenidos a este nuevo video en donde les enseñare como crear un avatar como el que estan viendo ahora mismo\",\n        \"speed\": 1,\n        \"emotion\": \"Excited\"\n      }\n    }\n  ],\n  \"dimension\": {\n    \"width\": 1280,\n    \"height\": 720\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "bf24243b-6ed9-4119-9735-56f33e711705",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "4Tz0nOTYjI9dEP1o",
+          "name": "Heygen Auth"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://api.heygen.com/v1/video_status.get",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "video_id",
+              "value": "={{ $json.data.video_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "7da00a07-a571-465d-8e4f-21d61b7e83ba",
+      "name": "Get Video",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "4Tz0nOTYjI9dEP1o",
+          "name": "Heygen Auth"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://api.heygen.com/v1/video_status.get",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "video_id",
+              "value": "={{ $('Create Video').item.json.data.video_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        688,
+        400
+      ],
+      "id": "b361d40b-63a4-4680-b3d0-025c22c39874",
+      "name": "Get Video1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "4Tz0nOTYjI9dEP1o",
+          "name": "Heygen Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -128,
+        608
+      ],
+      "id": "7f641878-2f8f-4e06-9de8-ce049dee93b1",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "zRsS8HggDnh8bWqc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.results[0].content }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "# Contexto\nEres un experto en copywriting y redes sociales. Recibiras un texto sobre alguna noticia relevante y tu tarea utilizar esta información para generar un script que sera utilizado en un video corto de 10 segundos.\n\nEl texto debe ser super corto ya que el video sera para redes sociales como Tiktok o Instagram reels.\n\n# Reglas\n1. Utiliza un hook al principio del texto para llamar la atención del usuario.\n2. No utilizar emojis en el texto.\n3. El texto debe ser de maximo 200 caracteres.\n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -128,
+        400
+      ],
+      "id": "c172493d-94dc-401b-9daa-7871f5a48198",
+      "name": "PAS Content"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"{{ $json.text }}\",\n  \"topic\": \"general\",\n  \"search_depth\": \"basic\",\n  \"max_results\": 1,\n  \"topic\": \"news\",\n  \"days\": 7,\n  \"include_answer\": true,\n  \"include_raw_content\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -336,
+        400
+      ],
+      "id": "9c81f9a1-780d-4158-a436-b17307dc7816",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "hPGg3YrPWPkLPJtm",
+          "name": "Tavily Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "02554a60-d8a5-46ee-a75b-f62568190d85",
+              "leftValue": "={{ $json.data.status }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        928,
+        400
+      ],
+      "id": "d71482de-728b-481f-8ca5-41c4d8b530c4",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        464,
+        400
+      ],
+      "id": "610a2703-9283-43a7-a001-0ed73a422eec",
+      "name": "Wait",
+      "webhookId": "15fd32d9-885f-44de-99b8-af7ef225a31e"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.heygen.com/v2/video/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_inputs\": [\n    {\n      \"character\": {\n        \"type\": \"avatar\",\n        \"avatar_id\": \"4d91dd901f90465cb2ffc65dd162277a\",\n        \"avatar_style\": \"normal\"\n      },\n      \"voice\": {\n        \"type\": \"text\",\n        \"voice_id\": \"6b92cc75c37249babee98ce2c7945c97\",\n        \"input_text\": \"{{ $json.text }}\",\n        \"speed\": 1,\n        \"emotion\": \"Excited\"\n      }\n    }\n  ],\n  \"dimension\": {\n    \"width\": 1280,\n    \"height\": 720\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        400
+      ],
+      "id": "7ef3178c-0d9d-4cc7-bc8b-1880b88bdbab",
+      "name": "Create Video",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "4Tz0nOTYjI9dEP1o",
+          "name": "Heygen Auth"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "HTTP Request2": [
+      {
+        "json": {
+          "query": "Últimas noticias sobre OpenAI.",
+          "follow_up_questions": null,
+          "answer": "In December, OpenAI announced plans to transition from a nonprofit to a for-profit organization, addressing investor concerns about the effectiveness of its nonprofit mission. The shift aimed to guide the company toward responsible AI development rather than prioritizing competition and product sales. However, Kathy Jennings, the Delaware attorney general, is reviewing the proposed restructure to ensure it aligns with the corporation's charitable commitment to benefit all of humanity.",
+          "images": [],
+          "results": [
+            {
+              "url": "https://www.theatlantic.com/technology/archive/2025/05/openai-nonprofit-pbc/682979/",
+              "title": "OpenAI Can Stop Pretending - The Atlantic",
+              "score": 0.725824,
+              "published_date": "Fri, 30 May 2025 11:30:00 GMT",
+              "content": "Last December, after facing concerns from potential investors that pouring money into the company wouldn’t pay off because of the nonprofit mission and complicated governance structure, the organization announced plans to change that: OpenAI was seeking to transition to a for-profit. Altman has expressed these concerns himself—and so OpenAI’s 2019 structure, which gave the nonprofit final say over the for-profit’s actions, was meant to guide the company toward building the technology responsibly instead of rushing to release new AI products, sell subscriptions, and stay ahead of competitors. Three days after OpenAI’s December announcement of the plans to revoke nonprofit oversight, Kathy Jennings, the attorney general of Delaware, notified the court presiding over Musk’s lawsuit that her office was reviewing the proposed restructure to ensure that the corporation was fulfilling its charitable interest to build AI that benefits all of humanity.",
+              "raw_content": "## Site Navigation\n\n## Sections\n\n![](https://cdn.theatlantic.com/_next/static/images/nav-archive-promo-5541b02ae92f1a9276249e1c6c2534ee.png)\n\n## The Print Edition\n\n![](https://www.theatlantic.com/magazine/images/current-issue.large.jpg)\n![Audio](https://cdn.theatlantic.com/media/files/audio/intro_sprint_2_emblem.png)\n![Crossword Puzzle](https://cdn.theatlantic.com/media/files/2025/crossword_icon_intro_sprint_2.png)\n![Magazine Archive](https://cdn.theatlantic.com/media/files/archive-thumbnail.png)\n![Your Subscription](https://cdn.theatlantic.com/media/files/YourSubscription_300x300.jpg)\n\n## [More From Artificial Intelligence](https://www.theatlantic.com/projects/artificial-intelligence/)\n\n## More From Artificial Intelligence\n\n![Screenshot from Mountainhead](https://cdn.theatlantic.com/thumbor/kvxNPgry9o8c6bMcsbPywri1TQg=/338x0:1463x1125/80x80/media/img/mt/2025/05/2025_05_28_Warzel_mountainhead_final/original.jpg)\n\n### It’s the End of the World (And It’s Their Fault)\n\n![OpenAI's logo on a U.S. dollar](https://cdn.theatlantic.com/thumbor/AiqQjNA5YE89jo2B9LytBMBWwxI=/438x0:1563x1125/80x80/media/img/mt/2025/05/2025_5_13_OpenAI_JA/original.jpg)\n\n### OpenAI Can Stop Pretending\n\n![An illustration of a man in a suit wearing a bra](https://cdn.theatlantic.com/thumbor/ZyujELUTVo_z3ukFhWrZ-g9A5Tc=/438x0:1563x1125/80x80/media/img/mt/2025/05/2025_05_21_googleAI_mgp3/original.jpg)\n\n### Google’s New AI Puts Breasts on Minors—And J. D. Vance\n\n![Illustration of OpenAI's logo eating an apple](https://cdn.theatlantic.com/thumbor/xKN5Glo0qL0fiZoL25Ud_K4b8qo=/505x0:1630x1125/80x80/media/img/mt/2025/05/OpenAiApple/original.png)\n\n### OpenAI’s Ambitions Just Became Crystal Clear\n\n# OpenAI Can Stop Pretending\n\nThe company is great at getting what it wants—whether or not it’s beholden to a nonprofit mission.\n\n![OpenAI's logo on a U.S. dollar](https://cdn.theatlantic.com/thumbor/FXajbynhNabm0QULJvT17DTWMrQ=/0x0:2000x1125/960x540/media/img/mt/2025/05/2025_5_13_OpenAI_JA/original.jpg)\n\nOpenAI is a strange company for strange times. Valued at $300 billion—roughly the same as seven Fords or one and a half PepsiCos—the [AI](https://www.theatlantic.com/projects/artificial-intelligence/) start-up has an era-defining product in [ChatGPT](https://www.theatlantic.com/tag/product/chatgpt/) and is racing to be the first to build superintelligent machines. The company is also, to the apparent frustration of its CEO Sam Altman, beholden to its [nonprofit status](https://www.theatlantic.com/technology/archive/2024/09/sam-altman-openai-for-profit/680031/).\n\nWhen [OpenAI](https://www.theatlantic.com/tag/organization/openai/) was founded in 2015, it was meant to be a research lab that would work toward the [goal](https://openai.com/charter/) of AI that is “safe” and “benefits all of humanity.” There wasn’t supposed to be any pressure—or desire, really—to make money. Later, in 2019, OpenAI created a for-profit subsidiary to better attract investors—the types of people who might otherwise turn to the less scrupulous corporations that dot Silicon Valley. But even then, that part of the organization was under the nonprofit side’s control. At the time, it had released no consumer products and capped how much money its investors could make.\n\nThen came ChatGPT. OpenAI’s leadership had [intended](https://www.technologyreview.com/2023/03/03/1069311/inside-story-oral-history-how-chatgpt-built-openai/) for the bot to provide insight into how people would use AI without any particular hope for widespread adoption. But ChatGPT became a hit, kicking “off a growth curve like nothing we have ever seen,” as Altman [wrote](https://blog.samaltman.com/reflections) in an essay this past January. The product was so alluring that the entire tech industry seemed to pivot overnight into an [AI arms race](https://time.com/6255952/ai-impact-chatgpt-microsoft-google/). Now, two and a half years since the chatbot’s release, Altman [says](https://www.youtube.com/live/5MWT_doo68k?si=QLPa8nDH2he65wCs&t=584) some half a billion people use the program each week, and he is [chasing](https://www.theatlantic.com/technology/archive/2024/09/sam-altman-openai-for-profit/680031/) that success with new features and products—for shopping, coding, health care, finance, and seemingly any other industry imaginable. OpenAI is behaving like a typical business, because its rivals *are* typical businesses, and massive ones at that: Google and Meta, among others.\n\n[Read: OpenAI’s ambitions just became crystal clear](https://www.theatlantic.com/technology/archive/2025/05/openai-io-jony-ive/682884/)\n\nNow 2015 feels like a very long time ago, and the charitable origins have turned into a ball and chain for OpenAI. Last December, after facing concerns from potential investors that pouring money into the company wouldn’t pay off because of the nonprofit mission and complicated governance structure, the organization [announced](https://openai.com/index/why-our-structure-must-evolve-to-advance-our-mission/) plans to change that: OpenAI was seeking to transition to a for-profit. The company argued that this was necessary to meet the tremendous costs of building advanced AI models. A nonprofit arm would still exist, though it would separately pursue “charitable initiatives”—and it would not have any say over the actions of the for-profit, which would convert into a public-benefit corporation, or PBC. Corporate backers appeared satisfied: In March, the Japanese firm Softbank conditioned billions of dollars in investments on OpenAI changing its structure.\n\nResistance came as swiftly as the new funding. Elon Musk—a co-founder of OpenAI who has since created his own rival firm, xAI, and seems to take every opportunity to undermine Altman—[wrote](https://x.com/elonmusk/status/1876175322598838408) on X that OpenAI “was funded as an open source, nonprofit, but has become a closed source, profit-maximizer.” He had already sued the company for abandoning its founding mission in favor of financial gain, and claimed that the December proposal was further proof. Many unlikely allies emerged soon after. Attorneys general in multiple states, nonprofit groups, former OpenAI employees, outside AI experts, economists, lawyers, and three Nobel laureates all have raised concerns about the pivot, even petitioning to submit briefs to Musk’s lawsuit.\n\nOpenAI backtracked, [announcing a new plan earlier this month](https://openai.com/index/evolving-our-structure/) that would have the nonprofit remain in charge. Steve Sharpe, a spokesperson for OpenAI, told me over email that the new proposed structure “puts us on the best path to” build a technology “that could become one of the most powerful and beneficial tools in human history.” (*The Atlantic* entered into a corporate partnership with OpenAI in 2024.)\n\nYet OpenAI’s pursuit of industry-wide dominance shows no real signs of having hit a roadblock. The company has a close relationship with the Trump administration and is [leading](https://www.theatlantic.com/technology/archive/2025/01/donald-trump-stargate/681412/) perhaps the biggest AI infrastructure buildout in history. Just this month, OpenAI announced a partnership with the United Arab Emirates and an expansion into personal gadgets—a forthcoming “[family of devices](https://www.theatlantic.com/technology/archive/2025/05/openai-io-jony-ive/682884/)” developed with Jony Ive, former chief design officer at Apple. For-profit or not, the future of AI still appears to be very much in Altman’s hands.\n\nWhy all the worry about corporate structure anyway? Governance, boardroom processes, legal arcana—these things are not what sci-fi dreams are made of. Yet those concerned with the societal dangers that generative AI, and thus OpenAI, pose feel these matters are of profound importance. The still more powerful artificial “general” intelligence, or AGI, that OpenAI and its competitors are chasing could theoretically cause mass unemployment, worsen the spread of misinformation, and violate all sorts of privacy laws. In the highest-flung [doomsday scenarios](https://www.theatlantic.com/technology/archive/2023/06/ai-regulation-sam-altman-bill-gates/674278/), the technology brings about civilizational collapse. Altman has expressed these concerns himself—and so OpenAI’s 2019 structure, which gave the nonprofit final say over the for-profit’s actions, was meant to guide the company toward building the technology responsibly instead of rushing to release new AI products, sell subscriptions, and stay ahead of competitors.\n\n“OpenAI’s nonprofit mission, together with the legal structures committing it to that mission, were a big part of my decision to join and remain at the company,” Jacob Hilton, a former OpenAI employee who contributed to ChatGPT, among other projects, told me. In April, Hilton and a number of his former colleagues, represented by the Harvard law professor Lawrence Lessig, wrote a letter to the court hearing Musk’s lawsuit, arguing that a large part of OpenAI’s success depended on its commitment to safety and the benefit of humanity. To renege on, or at least minimize, that mission was a betrayal.\n\nThe concerns extend well beyond former employees. Geoffrey Hinton, a computer scientist at the University of Toronto who last year received a Nobel Prize for his AI research, told me that OpenAI’s original structure would better help “prevent a super intelligent AI from ever wanting to take over.” Hinton is one of the Nobel laureates who has publicly opposed the tech company’s for-profit shift, alongside the economists Joseph Stiglitz and Oliver Hart. The three academics, joining a number of influential lawyers, economists, and AI experts, in addition to several former OpenAI employees, including Hilton, signed an [open letter](https://notforprivategain.org/) in April urging the attorneys general in Delaware and California—where the company’s nonprofit was incorporated and where the company is headquartered, respectively—to closely investigate the December proposal. According to its most recent tax [filing](https://projects.propublica.org/nonprofits/organizations/810861541/202413189349309791/full), OpenAI is intended to build AGI “that safely benefits humanity, unconstrained by a need to generate financial return,” so disempowering the nonprofit seemed, to the signatories, self-evidently contradictory.\n\n[Read: ‘We’re definitely going to build a bunker before we release AGI’](https://www.theatlantic.com/technology/archive/2025/05/karen-hao-empire-of-ai-excerpt/682798/)\n\nIn its initial proposal to transition to a for-profit, OpenAI still would have had some accountability as a public-benefit corporation: A PBC legally has to try to make profits for shareholders alongside pursuing a designated “public benefit” (in this case, building “safe” and “beneficial” AI as outlined in OpenAI’s founding mission). In its December announcement, OpenAI [described](https://openai.com/index/why-our-structure-must-evolve-to-advance-our-mission/) the restructure as “the next step in our mission.” But Michael Dorff, another signatory to the open letter and a law professor at UCLA who studies public-benefit corporations, explained to me that PBCs aren’t necessarily an effective way to bring about public good. “They are not great enforcement tools,” he said—they can “nudge” a company toward a given cause but do not give regulators much authority over that commitment. (Anthropic and xAI, two of OpenAI’s main competitors, are also public-benefit corporations.)\n\nOpenAI’s proposed conversion also raised a whole other issue—a precedent for taking resources accrued under charitable intentions and repurposing them for profitable pursuits. And so yet another coalition, composed of nonprofits and advocacy groups, wrote its own [petition](https://sff.org/over-50-organizations-call-on-california-attorney-general-rob-bonta-to-protect-up-to-300-billion-of-openais-charitable-assets-from-a-for-profit-takeover/) for OpenAI’s plans to be investigated, with the aim of preventing charitable organizations from being leveraged for financial gain in the future.\n\nRegulators, it turned out, were already watching. Three days after OpenAI’s December announcement of the plans to revoke nonprofit oversight, Kathy Jennings, the attorney general of Delaware, [notified](https://www.courtlistener.com/docket/69013420/77/1/musk-v-altman/) the court presiding over Musk’s lawsuit that her office was reviewing the proposed restructure to ensure that the corporation was fulfilling its charitable interest to build AI that benefits all of humanity. California’s attorney general, Rob Bonta, was [reviewing](https://calmatters.org/economy/technology/2025/01/openai-investigation-california/) the restructure, as well.\n\nThis ultimately led OpenAI to change plans. “We made the decision for the nonprofit to stay in control after hearing from civic leaders and having discussions with the offices of the Attorneys General of California and Delaware,” Altman wrote in a letter to OpenAI employees earlier this month. The for-profit, meanwhile, will still transition to a PBC.\n\nThe new plan is not yet a done deal: The offices of the attorneys general told me that they are reviewing the new proposal. Microsoft, OpenAI’s closest corporate partner, has not yet agreed to the new structure.\n\nOne could be forgiven for wondering what all the drama is for. Amid tension over OpenAI’s corporate structure, the organization’s corporate development hasn’t so much as flinched. In just the past few weeks, the company [has announced](https://openai.com/index/leadership-expansion-with-fidji-simo/) a new CEO of applications, someone to directly oversee and expand business operations; [OpenAI for Countries](https://openai.com/global-affairs/openai-for-countries/), an initiative focused on building AI infrastructure around the world; and Codex, a powerful AI “agent” that [does coding tasks](https://openai.com/index/introducing-codex/). To OpenAI, these endeavors legitimately contribute to benefiting humanity: building more and more useful AI tools; bringing those tools and the necessary infrastructure to run them to people around the world; drastically increasing the productivity of software engineers. No matter OpenAI’s ultimate aims, in a race against Google and Meta, some commercial moves are necessary to stay ahead. And enriching OpenAI’s investors and improving people’s lives are not necessarily mutually exclusive.\n\nThe greater issue is this: There is no universal definition for “safe” or “beneficial” AI. A chatbot might help doctors process paperwork faster and help a student float through high school without learning a thing; an AI research assistant could help climate scientists arrive at novel insights while also consuming huge amounts of water and fossil fuels. Whatever definition OpenAI applies will be largely determined by its board. Altman, in his May letter to employees, contended that OpenAI is on the best path “to continue to make rapid, safe progress and to put great AI in the hands of everyone.” But everyone, in this case, has to trust OpenAI’s definition of *safe progress*.\n\nThe nonprofit has not always been the most effective check on the company. In 2023, the nonprofit board—which then and now had “control” over the for-profit subsidiary—[removed Altman from his position as CEO](https://www.theatlantic.com/technology/archive/2025/05/karen-hao-empire-of-ai-excerpt/682798/). But the company’s employees revolted, and he was reinstated shortly thereafter with the support of Microsoft. In other words, “control” on paper does not always amount to much in reality. Sharpe, the OpenAI spokesperson, said the nonprofit will be able to appoint and remove directors to OpenAI’s separate for-profit board, but declined to clarify whether its board will be able to remove executives (such as the CEO). The company is “continuing to work through the specific governance mandate in consultation with relevant stakeholders,” he said.\n\nSharpe also told me that OpenAI will remove the cap on shareholder returns, which he said will satisfy the conditions for SoftBank’s billions of dollars in investment. A top SoftBank executive has [said](https://www.cnbc.com/2025/05/13/openai-restructure-plan-gets-softbank-blessing-as-microsoft-negotiates.html) “nothing has really changed” with OpenAI’s restructure, despite the nonprofit retaining control. If investors are now satisfied, the underlying legal structure is irrelevant. Marc Toberoff, a lawyer representing Musk in his lawsuit against OpenAI, wrote in a statement that “SoftBank pulled back the curtain on OpenAI’s corporate theater and said the quiet part out loud. OpenAI’s recent ‘restructuring’ proposal is nothing but window dressing.”\n\nLessig, the lawyer who represented the former OpenAI employees, told me that “it’s outrageous that we are allowing the development of this potentially catastrophic technology with nobody at any level doing any effective oversight of it.” Two years ago, Altman, in Senate testimony, [seemed](https://www.nytimes.com/2023/05/16/technology/openai-altman-artificial-intelligence-regulation.html) to agree with that notion: He told lawmakers that “regulatory intervention by governments will be critical to mitigate the risks” of powerful AI. But earlier this month, only a few days after writing to his employees and investors that “as AI accelerates, our commitment to safety grows stronger,” he [told](https://www.youtube.com/watch?v=pxGE41V04fs) the Senate something else: Too much regulation would be “disastrous” for America’s AI industry. Perhaps—but it might also be in the best interests of humanity.\n\n### About the Author\n\n![](https://cdn.theatlantic.com/thumbor/cvqkiGqr5oeTvJi706qtcaOkivk=/815x349:3584x3118/120x120/media/img/authors/2023/06/Matteo_Wong/original.jpg)"
+            }
+          ],
+          "response_time": 0.8
+        }
+      }
+    ],
+    "PAS Content": [
+      {
+        "json": {
+          "text": "¿OpenAI está a punto de cambiar su misión? Después de preocupaciones de inversores sobre su enfoque sin fines de lucro, la organización ha anunciado planes para convertirse en una empresa con fines de lucro. Esto despierta preguntas sobre el futuro de la inteligencia artificial y su responsabilidad. La fiscal general de Delaware ya está revisando la situación para proteger el interés de la humanidad. Este cambio podría transformar el panorama de la IA."
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Get Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "PAS Content",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "PAS Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PAS Content": {
+      "main": [
+        [
+          {
+            "node": "Create Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get Video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Video": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "895cb8f0-5b10-4df9-8f12-a2cda76a05a0",
+  "meta": {
+    "instanceId": "459048a985e48975a7cdd849ffc070141476660681b71299cde19c05546285d9"
+  },
+  "id": "bA7ezTswIXtEaLVA",
+  "tags": []
+}
