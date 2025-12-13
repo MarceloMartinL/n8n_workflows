@@ -1,0 +1,400 @@
+{
+  "name": "GPT-OSS",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8b45400c-2a99-4a07-964f-84a2459c0334",
+      "name": "When chat message received",
+      "webhookId": "705cede4-9536-4ddc-bfbb-83dde2752dfa"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=# Contexto\nEres un asistente para el restaurante El Gato Glotón. Debes responder amablemente las preguntas y peticiones de los usuarios.\n\nFecha de hoy: {{ $now }}\n\n# Herramientas\nUtiliza las siguientes herramientas para llevar a cabo las tareas que te pidan:\n\n- \"el_gato_gloton_kb\": Utiliza esta herramienta para obtener información sobre el restaurante El Gato Glotón y sus platillos o precios.\n- \"send_email\": Utiliza esta herramienta para enviar un email, deberás preguntar el email de la persona receptora y el contenido que llevara el email.\n\n- \"create_calendar_event\": Utiliza esta herramienta para crear un evento en el calendario, deberás preguntar la hora de inicio del evento y termino del evento. En caso de no tener la hora de termino puedes asumir que sera de 1 hora. Tambien debes ponerle un titulo al evento.\n\n# Tono\nDebes hablar de manera amistosa y juguetona, puedes utilizar emojis de vez en cuando para que la conversación parezca mas natural."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "5171865a-2609-45da-94f1-f8f933a833c1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        112,
+        272
+      ],
+      "id": "5a8e0515-c68f-46a9-a093-faba9a8eee8d",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "chrSFXJkECWb6sru",
+          "name": "Restaurant Gato Gloton"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        672
+      ],
+      "id": "32605651-bf40-4424-9b8e-1f8a388ad35e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9068506f-bb3e-4816-879e-75d70020706b",
+              "name": "text",
+              "value": "# Restaurante El Gato Glotón  Bienvenido a **El Gato Glotón**, el lugar perfecto para disfrutar comida casera con un toque divertido.   Estamos ubicados en **Avenida Sabores 123, Ciudad del Sabor**, y abrimos **todos los días de 12:00 PM a 11:00 PM**.  ---  ## 🥘 Especialidades de la Casa * **Hamburguesa Felina** – $8.990     Jugosa hamburguesa de res con queso cheddar, cebolla caramelizada y salsa secreta del Gato.   * **Pizza Bigotes** – $10.990     Masa artesanal, salsa de tomate casera, queso mozzarella y toppings a elección.   * **Pastas Ronroneo** – $9.490     Spaghetti al dente con salsa boloñesa o pesto.    ---  ## 🍰 Postres * **Tarta de Queso Miauu** – $4.990   * **Brownie Bigotón** – $3.990    ---  ## 🍹 Bebidas * **Jugos Naturales** (naranja, frutilla, piña) – $2.500   * **Cerveza Artesanal “Garras”** – $3.500   * **Refrescos** – $1.800    ---  ## 💰 Promociones * **Combo Almuerzo**:     Hamburguesa Felina + Bebida + Postre pequeño por **$11.990**     _(Lunes a Viernes, 12:00 PM a 3:00 PM)_    ---  ## ✅ Servicios * **Delivery** disponible vía WhatsApp al **+56 9 1234 5678**   * **Reservas** para grupos y cumpleaños   * Opción **vegetariana** y **sin gluten** en todos los platos principales    ---  ¡Ven y prueba por qué todos dicen que en **El Gato Glotón** siempre sales ronroneando de felicidad!",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        672
+      ],
+      "id": "458b1c51-95d9-4595-871c-9f6afaba7cd6",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        256,
+        672
+      ],
+      "id": "ca908758-b8b7-4597-850f-e8209661b4f9",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "0XwJWmkgsjMJALxb",
+          "name": "Gato Gloton Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        176,
+        864
+      ],
+      "id": "da810b86-4bcc-4c12-8c5e-c061709cd0de",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "zRsS8HggDnh8bWqc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        352,
+        864
+      ],
+      "id": "8cd9703a-306e-45cc-9d78-113663f66837",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        544,
+        208
+      ],
+      "id": "cacc617a-c773-435a-8ed9-6603219589ee",
+      "name": "send_email",
+      "webhookId": "67116057-a5ee-4d96-b9ed-28bbb14f23bf",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TRDdjC4AZaOFDeqM",
+          "name": "MiniPrinter Gmail"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "miniprinter2023@gmail.com",
+          "mode": "list",
+          "cachedResultName": "miniprinter2023@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        704,
+        208
+      ],
+      "id": "fb9a361d-1e2f-45b3-849c-5fce6568438c",
+      "name": "create_calendar_event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "ulAE8zwJ0SrsBZkl",
+          "name": "MiniPrinter Calendar"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        384
+      ],
+      "id": "2f661efb-5267-4dc5-baea-55df1a36d719",
+      "name": "Embeddings OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "zRsS8HggDnh8bWqc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Utiliza esta herramienta revisar la informacion, comidas y precios del restaurante El Gato Glotón.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        224
+      ],
+      "id": "1eea1807-0f09-451c-a550-474040f8cb31",
+      "name": "el_gato_gloton_kb",
+      "credentials": {
+        "supabaseApi": {
+          "id": "0XwJWmkgsjMJALxb",
+          "name": "Gato Gloton Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -80,
+        272
+      ],
+      "id": "2734d961-9877-4953-8220-4dec7096b042",
+      "name": "GPT-OSS",
+      "credentials": {
+        "openAiApi": {
+          "id": "zRsS8HggDnh8bWqc",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_email": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create_calendar_event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "main": [
+        []
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "el_gato_gloton_kb",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "el_gato_gloton_kb": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-OSS": {
+      "ai_languageModel": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a7db8de8-05dd-4e63-9d09-c39f45a7c7bc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "459048a985e48975a7cdd849ffc070141476660681b71299cde19c05546285d9"
+  },
+  "id": "hRmQCHY4Mx7wd0Sz",
+  "tags": []
+}
